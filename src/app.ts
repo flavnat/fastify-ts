@@ -1,41 +1,42 @@
 import Fastify from 'fastify';
 import { env } from './config/env.js';
 import { envToLogger } from './config/logger.js';
-import dbPlugin from './plugins/db.js';
-import { users } from './db/schema.js';
-import z from 'zod';
-
+import db from './plugins/db.js';
+import { user } from './db/schema.js';
+import { auth } from './lib/auth.js';
+import cors from '@fastify/cors';
 const fastify = Fastify({
   logger: envToLogger["development"] ?? true
 });
 
+interface userSchema {
+  name: string,
+  email: string
+}
 
-const userSchema = z.object({
-  username: z.string(),
-  email: z.string()
+fastify.post("/test-users", async (request, reply) => {
+  const { name, email } = request.body as userSchema
+
+  await fastify.db.insert(user).values({
+    id: crypto.randomUUID(),
+    name,
+    email,
+    emailVerified: false,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  });
+
 })
-
-type createUser = z.infer<typeof userSchema>
 
 async function start() {
   try {
-    await fastify.register(dbPlugin);
-    fastify.get('/', async (request, reply) => {
-      const allUsers = await fastify.db.select().from(users);
-      return allUsers;
-    });
-
-
-    fastify.post('/', async (request, reply) => {
-      const { username, email } = userSchema.parse(request.body)
-      await fastify.db.insert(users).values({
-        username,
-        email
-      });
-    })
-
+    await fastify.register(db);
+    // await fastify.register(cors, {
+    //   origin: "http://localhost:3000", // In production, use your actual domain
+    //   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    //   credentials: true, // Required for cookies/sessions
+    // });
     await fastify.listen({ port: Number(env.PORT) || 3000 });
-
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);

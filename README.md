@@ -1,4 +1,4 @@
-# 🚀 Fastify + Better Auth Starter Kit
+# Fastify + Better Auth Starter Kit
 
 A production-ready starter template for building authenticated APIs with [Fastify](https://fastify.dev/) and [Better Auth](https://www.better-auth.com/).
 
@@ -43,7 +43,7 @@ src/
     └── fastify.d.ts       # Type declarations
 ```
 
-## 🚦 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -195,7 +195,7 @@ export const auth = betterAuth({
 });
 ```
 
-## 📚 Learn More
+## Learn More
 
 - [Better Auth Documentation](https://www.better-auth.com/docs)
 - [Fastify Documentation](https://fastify.dev/docs/latest/)
